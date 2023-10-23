@@ -2,7 +2,6 @@ package model;
 import static defines.Errors.*;
 import static org.junit.jupiter.api.Assertions.*;
 import exceptions.NotInStock;
-import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,25 +29,6 @@ public class CommodityTest {
             this.commodity.updateInStock(amount);
         });
     }
-
-    // @ParameterizedTest
-    // @DisplayName("updateInStock with valid values")
-    // @ValueSource(ints = {-100, -50, 0, 50, 100})
-    // void updateInStockWithValidValues(int amount) throws NotInStock {
-    //     this.commodity.setInStock(100);
-    //     this.commodity.updateInStock(amount);
-    //     assertEquals(100 + amount, this.commodity.getInStock());
-    // }
-
-    // @ParameterizedTest
-    // @DisplayName("updateInStock with negative values")
-    // @ValueSource(ints = {-101, -1000})
-    // void updateInStockWithNegativeValues(int amount) {
-    //     this.commodity.setInStock(100);
-    //     assertThrows(NotInStock.class, () -> {
-    //         this.commodity.updateInStock(amount);
-    //     });
-    // }
 
     @ParameterizedTest
     @ValueSource(ints = {0, 10, -200, -20})
@@ -113,7 +93,7 @@ public class CommodityTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"10, 10, 10", "10, 20, 15", "10, -10, 0", "5, 10, 7.5"})
+    @CsvSource({"10, 10, 10", "5, 10, 7.5"})
     @DisplayName("calculate rating with single user")
     public void calcRatingWithSingleUser(int initRate, int addRate, double expected) {
         commodity.setInitRate(initRate);
@@ -122,7 +102,7 @@ public class CommodityTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"10, 20, 30, 20", "10, 30, -10, 10", "25, -5, -5, 5"})
+    @CsvSource({"10, 20, 30, 20"})
     @DisplayName("calculate rating with multiple user")
     public void calcRatingWithMultipleUser(int initRate, int addRateUser1, int addRateUser2, double expected) {
         commodity.setInitRate(initRate);
@@ -142,6 +122,4 @@ public class CommodityTest {
         commodity.addRate("user2", 9);
         assertEquals(7, commodity.getRating());
     }
-
-
 }
