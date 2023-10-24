@@ -99,7 +99,7 @@ public class CommentTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"user1,like", "user2,dislike"})
+    @CsvSource({"user1, like", "user2, dislike"})
     @DisplayName("Test Comment with user vote containing the key of userVote")
     void testAddVoteWithContainingKeyOfVote(String username, String vote) {
         comment.addUserVote(username, vote);
@@ -108,7 +108,7 @@ public class CommentTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"user1,like", "user2,dislike"})
+    @CsvSource({"user1, like", "user2, dislike"})
     @DisplayName("Test Comment with adding user vote with correct vote")
     void testAddVoteWithHavingCorrectVote(String username, String vote) {
         comment.addUserVote(username, vote);

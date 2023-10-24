@@ -3,6 +3,7 @@ package model;
 import exceptions.CommodityIsNotInBuyList;
 import exceptions.InsufficientCredit;
 import exceptions.InvalidCreditRange;
+import exceptions.NotInStock;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -109,17 +110,52 @@ public class UserTest {
         assertEquals(quantity, user.getPurchasedList().get("3"));
     }
 
+    @Test
+    @DisplayName("test User by adding to buy item when commodity in stock is not positive")
+    void testAddBuyItemWhenCommodityInStockIsNotPositive() {
+        Commodity commodity = new Commodity();
+        commodity.setId("3");
+        Map<String, Integer> buyList = new HashMap<>() {{
+            put("1", 1);
+            put("2", 2);
+        }};
+        user.setBuyList(buyList);
+        commodity.setInStock(0);
+        assertThrows(NotInStock.class, () -> {
+            user.addBuyItem(commodity);
+        });
+    }
+
+    @Test
+    @DisplayName("test User by adding to buy item when commodity in stock is positive")
+    void testAddBuyItemWhenCommodityInStockIsPositive() throws NotInStock {
+        Commodity commodity = new Commodity();
+        commodity.setId("3");
+        Map<String, Integer> buyList = new HashMap<>() {{
+            put("1", 1);
+            put("2", 2);
+        }};
+        user.setBuyList(buyList);
+        commodity.setInStock(1);
+        assertDoesNotThrow(() -> {
+            user.addBuyItem(commodity);
+        });
+    }
+
     @ParameterizedTest
     @ValueSource(ints = {1, 2, 3})
-    @DisplayName("test User: adding new buy item and check if the id is added")
-    void testAddBuyItemWithNewItemAndCheckIfIdIsAdded(int initialQuantity) {
-        Commodity commodity = mock(Commodity.class);
-        when(commodity.getId()).thenReturn("3");
+    @DisplayName("test User with adding new buy item and check if the id is added")
+    void testAddBuyItemWithNewItemAndCheckIfIdIsAdded(int initialQuantity) throws NotInStock {
+//        Commodity commodity = mock(Commodity.class);
+//        when(commodity.getId()).thenReturn("3");
+        Commodity commodity = new Commodity();
+        commodity.setId("3");
         Map<String, Integer> buyList = new HashMap<>() {{
             put("1", initialQuantity);
             put("2", 2);
         }};
         user.setBuyList(buyList);
+        commodity.setInStock(1);
         user.addBuyItem(commodity);
         assertTrue(user.getBuyList().containsKey("3"));
     }
@@ -127,14 +163,17 @@ public class UserTest {
     @ParameterizedTest
     @ValueSource(ints = {1, 2, 3})
     @DisplayName("test User: adding new buy item with correct quantity")
-    void testAddBuyItemWithNewItem(int initialQuantity) {
-        Commodity commodity = mock(Commodity.class);
-        when(commodity.getId()).thenReturn("3");
+    void testAddBuyItemWithNewItem(int initialQuantity) throws NotInStock {
+//        Commodity commodity = mock(Commodity.class);
+        Commodity commodity = new Commodity();
+        commodity.setId("3");
+//        when(commodity.getId()).thenReturn("3");
         Map<String, Integer> buyList = new HashMap<>() {{
             put("1", initialQuantity);
             put("2", 2);
         }};
         user.setBuyList(buyList);
+        commodity.setInStock(1);
         user.addBuyItem(commodity);
         assertEquals(1, user.getBuyList().get("3"));
     }
@@ -142,14 +181,17 @@ public class UserTest {
     @ParameterizedTest
     @ValueSource(ints = {1, 2, 3})
     @DisplayName("test User with adding existed buy item")
-    void testAddBuyItemWithExistedItem(int initialQuantity) {
-        Commodity commodity = mock(Commodity.class);
-        when(commodity.getId()).thenReturn("1");
+    void testAddBuyItemWithExistedItem(int initialQuantity) throws NotInStock {
+//        Commodity commodity = mock(Commodity.class);
+//        when(commodity.getId()).thenReturn("1");
+        Commodity commodity = new Commodity();
+        commodity.setId("1");
         Map<String, Integer> buyList = new HashMap<>() {{
             put("1", initialQuantity);
             put("2", 2);
         }};
         user.setBuyList(buyList);
+        commodity.setInStock(1);
         user.addBuyItem(commodity);
         assertEquals(initialQuantity + 1, user.getBuyList().get("1"));
     }
@@ -157,17 +199,20 @@ public class UserTest {
     @Test
     @DisplayName("test remove non-existing item from buy list")
     void testRemoveNonExistingItemFromBuyList() {
-        Commodity commodity = mock(Commodity.class);
-        when(commodity.getId()).thenReturn("1");
+        Commodity commodity = new Commodity();
+        commodity.setId("1");
         assertThrows(CommodityIsNotInBuyList.class, () -> user.removeItemFromBuyList(commodity));
     }
 
     @Test
     @DisplayName("test remove 1 item from buy list")
     void testRemoveOneItemFromBuyList() throws CommodityIsNotInBuyList {
-        Commodity commodity = mock(Commodity.class);
-        when(commodity.getId()).thenReturn("1");
-        user.addBuyItem(commodity);
+        Commodity commodity = new Commodity();
+        commodity.setId("1");
+        Map<String, Integer> buyList = new HashMap<>() {{
+            put("1", 1);
+        }};
+        user.setBuyList(buyList);
         user.removeItemFromBuyList(commodity);
         assertFalse(user.getBuyList().containsKey("1"));
     }
@@ -175,11 +220,12 @@ public class UserTest {
     @Test
     @DisplayName("test decrease item quantity from buy list")
     void testDecreaseItemQuantityFromBuyList() throws CommodityIsNotInBuyList {
-        Commodity commodity = mock(Commodity.class);
-        when(commodity.getId()).thenReturn("1");
-        user.addBuyItem(commodity);
-        user.addBuyItem(commodity);
-        user.addBuyItem(commodity);
+        Commodity commodity = new Commodity();
+        commodity.setId("1");
+        Map<String, Integer> buyList = new HashMap<>() {{
+            put("1", 3);
+        }};
+        user.setBuyList(buyList);
         int initialQuantity = user.getBuyList().get("1");
         user.removeItemFromBuyList(commodity);
         assertEquals(initialQuantity - 1, user.getBuyList().get("1"));

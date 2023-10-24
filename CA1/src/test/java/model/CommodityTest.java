@@ -1,5 +1,4 @@
 package model;
-import static defines.Errors.*;
 import static org.junit.jupiter.api.Assertions.*;
 import exceptions.NotInStock;
 import org.junit.jupiter.api.BeforeEach;
@@ -110,7 +109,6 @@ public class CommodityTest {
         commodity.addRate("user2", addRateUser2);
         assertEquals(expected, commodity.getRating());
     }
-
 
     @Test
     @DisplayName("calculate rating with duplicate user")
