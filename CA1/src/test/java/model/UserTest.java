@@ -1,5 +1,6 @@
 package model;
 
+import exceptions.CommodityIsNotInBuyList;
 import exceptions.InsufficientCredit;
 import exceptions.InvalidCreditRange;
 import org.junit.jupiter.api.BeforeEach;
@@ -151,5 +152,36 @@ public class UserTest {
         user.setBuyList(buyList);
         user.addBuyItem(commodity);
         assertEquals(initialQuantity + 1, user.getBuyList().get("1"));
+    }
+
+    @Test
+    @DisplayName("test remove non-existing item from buy list")
+    void testRemoveNonExistingItemFromBuyList() {
+        Commodity commodity = mock(Commodity.class);
+        when(commodity.getId()).thenReturn("1");
+        assertThrows(CommodityIsNotInBuyList.class, () -> user.removeItemFromBuyList(commodity));
+    }
+
+    @Test
+    @DisplayName("test remove 1 item from buy list")
+    void testRemoveOneItemFromBuyList() throws CommodityIsNotInBuyList {
+        Commodity commodity = mock(Commodity.class);
+        when(commodity.getId()).thenReturn("1");
+        user.addBuyItem(commodity);
+        user.removeItemFromBuyList(commodity);
+        assertFalse(user.getBuyList().containsKey("1"));
+    }
+
+    @Test
+    @DisplayName("test decrease item quantity from buy list")
+    void testDecreaseItemQuantityFromBuyList() throws CommodityIsNotInBuyList {
+        Commodity commodity = mock(Commodity.class);
+        when(commodity.getId()).thenReturn("1");
+        user.addBuyItem(commodity);
+        user.addBuyItem(commodity);
+        user.addBuyItem(commodity);
+        int initialQuantity = user.getBuyList().get("1");
+        user.removeItemFromBuyList(commodity);
+        assertEquals(initialQuantity - 1, user.getBuyList().get("1"));
     }
 }
