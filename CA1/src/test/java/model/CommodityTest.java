@@ -1,6 +1,7 @@
 package model;
 import static org.junit.jupiter.api.Assertions.*;
 import exceptions.NotInStock;
+import exceptions.RateOutOfRange;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -8,6 +9,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -32,7 +34,7 @@ public class CommodityTest {
     @ParameterizedTest
     @ValueSource(ints = {0, 10, -200, -20})
     @DisplayName("Test Commodity updateInStock with non-negative stock in the end")
-    void testUpdateInStockeWithNonNegativeStockInTheEnd(int amount) {
+    void testUpdateInStockWithNonNegativeStockInTheEnd(int amount) {
         commodity.setInStock(200);
         assertDoesNotThrow(() -> {
             commodity.updateInStock(amount);
@@ -59,32 +61,41 @@ public class CommodityTest {
         assertEquals(20 + amount, commodity.getInStock());
     }
 
+    @ParameterizedTest
+    @ValueSource(ints = {0, -1, 11})
+    @DisplayName("Test Commodity addRate with invalid score")
+    void testAddRateWithInvalidScore(int score) {
+        assertThrows(RateOutOfRange.class, () -> {
+            commodity.addRate("user1", score);
+        });
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {1, 5, 10})
+    @DisplayName("Test Commodity addRate with valid score")
+    void testAddRateWithValidScore(int score) {
+        assertDoesNotThrow(() -> {
+            commodity.addRate("user1", score);
+        });
+    }
 
     @Test
     @DisplayName("addRate to userRate")
-    public void addRateCorrectly() {
+    public void addRateCorrectly() throws RateOutOfRange {
         this.commodity.addRate("user1", 1);
         assertTrue(this.commodity.getUserRate().containsKey("user1"));
     }
 
     @Test
     @DisplayName("new rate added to userRate with correct score")
-    public void addRateWithUserAndRateCorrectly() {
+    public void addRateWithUserAndRateCorrectly() throws RateOutOfRange {
         this.commodity.addRate("user1", 1);
         assertEquals(1, this.commodity.getUserRate().get("user1"));
     }
 
-    // FIXME: should it throw exception?
-    @Test
-    @DisplayName("addRate with Null username")
-    public void addRateNullUsername() {
-        this.commodity.addRate(null, 1);
-        assertTrue(this.commodity.getUserRate().containsKey(null));
-    }
-
     @Test
     @DisplayName("existing user updated score")
-    public void updateRateOnExistingUser() {
+    public void updateRateOnExistingUser() throws RateOutOfRange {
         commodity.addRate("user1", 3);
         commodity.addRate("user1", 5);
         Map<String, Integer> userRate = this.commodity.getUserRate();
@@ -92,9 +103,9 @@ public class CommodityTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"10, 10, 10", "5, 10, 7.5"})
+    @CsvSource({"10, 10, 10f", "5, 10, 7.5f"})
     @DisplayName("calculate rating with single user")
-    public void calcRatingWithSingleUser(int initRate, int addRate, double expected) {
+    public void calcRatingWithSingleUser(int initRate, int addRate, float expected) throws RateOutOfRange {
         commodity.setInitRate(initRate);
         commodity.addRate("user1", addRate);
         assertEquals(expected, commodity.getRating());
@@ -103,7 +114,7 @@ public class CommodityTest {
     @ParameterizedTest
     @CsvSource({"10, 20, 30, 20"})
     @DisplayName("calculate rating with multiple user")
-    public void calcRatingWithMultipleUser(int initRate, int addRateUser1, int addRateUser2, double expected) {
+    public void calcRatingWithMultipleUser(int initRate, int addRateUser1, int addRateUser2, double expected) throws RateOutOfRange {
         commodity.setInitRate(initRate);
         commodity.addRate("user1", addRateUser1);
         commodity.addRate("user2", addRateUser2);
@@ -112,7 +123,7 @@ public class CommodityTest {
 
     @Test
     @DisplayName("calculate rating with duplicate user")
-    public void calcRatingWithDuplicateUser() {
+    public void calcRatingWithDuplicateUser() throws RateOutOfRange {
         commodity.setInitRate(10);
         commodity.addRate("user1", 5);
         commodity.addRate("user2", 3);

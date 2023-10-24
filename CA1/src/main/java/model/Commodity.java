@@ -1,6 +1,7 @@
 package model;
 
 import exceptions.NotInStock;
+import exceptions.RateOutOfRange;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,7 +30,9 @@ public class Commodity {
         this.inStock += amount;
     }
 
-    public void addRate(String username, int score) {
+    public void addRate(String username, int score) throws RateOutOfRange {
+        if (score < 1 || score > 10)
+            throw new RateOutOfRange();
         userRate.put(username, score);
         this.calcRating();
     }

@@ -1,5 +1,6 @@
 package controllers;
 
+import exceptions.RateOutOfRange;
 import service.Baloot;
 import model.Comment;
 import model.Commodity;
@@ -41,6 +42,8 @@ public class CommoditiesController {
         } catch (NotExistentCommodity e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (NumberFormatException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (RateOutOfRange e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
