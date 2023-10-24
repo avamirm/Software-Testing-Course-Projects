@@ -46,7 +46,7 @@ public class Baloot {
     }
 
     public void addCommodityToUserBuyList(String userId, String commodityId)
-            throws NotExistentUser, NotExistentCommodity, AlreadyInBuyList {
+            throws NotExistentUser, NotExistentCommodity, AlreadyInBuyList, NotInStock {
         User user = getUserById(userId);
         Commodity commodity = getCommodityById(commodityId);
 

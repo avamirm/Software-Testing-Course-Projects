@@ -22,9 +22,9 @@ public class CommodityTest {
     }
 
     @ParameterizedTest
-    @DisplayName("updateInStock does not throw exception")
+    @DisplayName("Test updateInStock does not throw exception with positive stock in the end")
     @ValueSource(ints = {-100, -50, 0, 50, 100})
-    void updateInStockDoesNotThrowExp(int amount) {
+    void updateInStockDoesNotThrowExpWithPositiveStock(int amount) {
         this.commodity.setInStock(100);
         assertDoesNotThrow(() -> {
             this.commodity.updateInStock(amount);
@@ -80,22 +80,22 @@ public class CommodityTest {
     }
 
     @Test
-    @DisplayName("addRate to userRate")
-    public void addRateCorrectly() throws RateOutOfRange {
+    @DisplayName("Test Commodity addRate to userRate")
+    public void testAddRateCorrectly() throws RateOutOfRange {
         this.commodity.addRate("user1", 1);
         assertTrue(this.commodity.getUserRate().containsKey("user1"));
     }
 
     @Test
-    @DisplayName("new rate added to userRate with correct score")
-    public void addRateWithUserAndRateCorrectly() throws RateOutOfRange {
+    @DisplayName("Test Commodity new rate added to userRate with correct score")
+    public void testAddRateWithUserAndRateCorrectly() throws RateOutOfRange {
         this.commodity.addRate("user1", 1);
         assertEquals(1, this.commodity.getUserRate().get("user1"));
     }
 
     @Test
-    @DisplayName("existing user updated score")
-    public void updateRateOnExistingUser() throws RateOutOfRange {
+    @DisplayName("Test Commodity existing user updated score")
+    public void testUpdateRateOnExistingUser() throws RateOutOfRange {
         commodity.addRate("user1", 3);
         commodity.addRate("user1", 5);
         Map<String, Integer> userRate = this.commodity.getUserRate();
@@ -104,17 +104,17 @@ public class CommodityTest {
 
     @ParameterizedTest
     @CsvSource({"10, 10, 10f", "5, 10, 7.5f"})
-    @DisplayName("calculate rating with single user")
-    public void calcRatingWithSingleUser(int initRate, int addRate, float expected) throws RateOutOfRange {
+    @DisplayName("Test Commodity calculate rating with single user")
+    public void testCalcRatingWithSingleUser(int initRate, int addRate, float expected) throws RateOutOfRange {
         commodity.setInitRate(initRate);
         commodity.addRate("user1", addRate);
         assertEquals(expected, commodity.getRating());
     }
 
     @ParameterizedTest
-    @CsvSource({"10, 20, 30, 20"})
-    @DisplayName("calculate rating with multiple user")
-    public void calcRatingWithMultipleUser(int initRate, int addRateUser1, int addRateUser2, double expected) throws RateOutOfRange {
+    @CsvSource({"10, 5, 6, 7f"})
+    @DisplayName("Test Commodity calculate rating with multiple user")
+    public void testCalcRatingWithMultipleUser(int initRate, int addRateUser1, int addRateUser2, float expected) throws RateOutOfRange {
         commodity.setInitRate(initRate);
         commodity.addRate("user1", addRateUser1);
         commodity.addRate("user2", addRateUser2);
@@ -122,8 +122,8 @@ public class CommodityTest {
     }
 
     @Test
-    @DisplayName("calculate rating with duplicate user")
-    public void calcRatingWithDuplicateUser() throws RateOutOfRange {
+    @DisplayName("Test Commodity calculate rating with the same user")
+    public void testCalcRatingWithTheSameUser() throws RateOutOfRange {
         commodity.setInitRate(10);
         commodity.addRate("user1", 5);
         commodity.addRate("user2", 3);

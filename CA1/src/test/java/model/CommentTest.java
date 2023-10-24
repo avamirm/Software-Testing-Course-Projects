@@ -22,82 +22,59 @@ public class CommentTest {
     }
 
     @Test
-    @DisplayName("Test Comment id setter and getter")
-    void testSetGetId() {
+    @DisplayName("Test Comment constructor with id")
+    void testConstructorWithId() {
         int id = 1;
-        comment.setId(id);
+        Comment comment = new Comment(id, " ", " ", 1, " ");
         assertEquals(id, comment.getId());
     }
 
     @Test
-    @DisplayName("Test Comment userEmail setter and getter")
-    void testSetGetEmail() {
-        String email = "user@gmail.com";
-        comment.setUserEmail(email);
+    @DisplayName("Test Comment constructor with userEmail")
+    void testConstructorWithEmail() {
+        String email = "user@email.com";
+        Comment comment = new Comment(1, email, " ", 1, " ");
         assertEquals(email, comment.getUserEmail());
     }
 
     @Test
-    @DisplayName("Test Comment username setter and getter")
-    void testSetGetUsername() {
-        String userName = "user";
-        comment.setUsername(userName);
-        assertEquals(userName, comment.getUsername());
+    @DisplayName("Test Comment constructor with username")
+    void testConstructorWithUsername() {
+        String username = "user";
+        Comment comment = new Comment(1, " ", username, 1, " ");
+        assertEquals(username, comment.getUsername());
     }
 
     @Test
-    @DisplayName("Test Comment commodityId setter and getter")
-    void testSetGetCommodityId() {
+    @DisplayName("Test Comment constructor with commodityId")
+    void testConstructorWithCommodityId() {
         int id = 1;
-        comment.setCommodityId(id);
+        Comment comment = new Comment(1, " ", " ", id, " ");
         assertEquals(id, comment.getCommodityId());
     }
 
     @Test
-    @DisplayName("Test Comment text setter and getter")
-    void testSetGetText() {
+    @DisplayName("Test Comment constructor with text")
+    void testConstructorWithText() {
         String text = "text";
-        comment.setText(text);
+        Comment comment = new Comment(1, " ", " ", 1, text);
         assertEquals(text, comment.getText());
     }
+    @Test
+    @DisplayName("Test Comment current date format")
+    public void testCurrentDateFormat() {
+        String currentDate = comment.getCurrentDate();
+        assertTrue(currentDate.matches("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}"));
+    }
 
     @Test
-    @DisplayName("Test Comment date setter and getter")
-    void testSetGetDate() {
+    @DisplayName("Test Comment current date")
+    public void testCurrentDate() {
+        String currentDate = comment.getCurrentDate();
         Date date = new Date();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String expectedDate = dateFormat.format(date);
-        comment.setDate(expectedDate);
-        assertEquals(expectedDate, comment.getDate());
+        SimpleDateFormat formatOfDate = new SimpleDateFormat("yyyy-MM-dd");
+        assertEquals(formatOfDate.format(date), currentDate.substring(0, 10));
     }
-
-    @Test
-    @DisplayName("Test Comment like setter and getter")
-    void testSetGetLike() {
-        int likes = 2;
-        comment.setLike(likes);
-        assertEquals(likes, comment.getLike());
-    }
-
-    @Test
-    @DisplayName("Test Comment dislike setter and getter")
-    void testSetGetDislike() {
-        int dislikes = 1;
-        comment.setDislike(dislikes);
-        assertEquals(dislikes, comment.getDislike());
-    }
-
-    @Test
-    @DisplayName("Test Comment userVote setter and getter")
-    void testSetGetUserVote() {
-        Map<String, String> userVote = new HashMap<>() {{
-            put("user1", "like");
-            put("user2", "dislike");
-        }};
-        comment.setUserVote(userVote);
-        assertEquals(userVote, comment.getUserVote());
-    }
-
     @ParameterizedTest
     @CsvSource({"user1, like", "user2, dislike"})
     @DisplayName("Test Comment with user vote containing the key of userVote")
