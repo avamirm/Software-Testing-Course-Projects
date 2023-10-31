@@ -46,9 +46,7 @@ public class CommoditiesController {
             return new ResponseEntity<>("rate added successfully!", HttpStatus.OK);
         } catch (NotExistentCommodity e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        } catch (NumberFormatException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        } catch (RateOutOfRange e) {
+        } catch (NumberFormatException | RateOutOfRange e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -59,10 +57,11 @@ public class CommoditiesController {
         String username = input.get("username");
         String commentText = input.get("comment");
 
-        User user = null;
+        User user;
         try {
             user = baloot.getUserById(username);
         } catch (NotExistentUser ignored) {
+            return new ResponseEntity<>("user not found!", HttpStatus.NOT_FOUND);
         }
 
         Comment comment = new Comment(commentId, user.getEmail(), user.getUsername(), Integer.parseInt(id), commentText);
