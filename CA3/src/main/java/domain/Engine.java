@@ -25,6 +25,10 @@ public class Engine {
             return 0;
         }
 
+        if (count == 0) {
+            throw new RuntimeException("Customer not found");
+        }
+
         return sum / count;
     }
 
