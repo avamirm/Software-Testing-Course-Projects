@@ -143,7 +143,12 @@ public class EngineTest {
                 quantity = 3;
             }});
             add(new Order() {{
-                id = 4;
+                id = 6;
+                price = price_;
+                quantity = 5;
+            }});
+            add(new Order() {{
+                id = 5;
                 price = price_;
                 quantity = 7;
             }});
