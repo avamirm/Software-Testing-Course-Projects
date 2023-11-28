@@ -132,20 +132,21 @@ public class CommoditiesControllerTestAPI {
 
     // CHECKME: should check null format in this method or add a new method for null format?
 
-//    @ParameterizedTest
-//    @DisplayName("Test rateCommoidty with existed commodityId and invalid rate format return bad request status")
-//    @ValueSource(strings = {"1c", "1.5"})
-//    public void testRateCommodityWithExistedCommodityIdAndInvalidRateFormat(String rate) throws Exception {
-//        String commodityId = "1";
-//        Map<String, String> input = Map.of("rate", rate, "username", "username1");
-//        Commodity commodity = new Commodity();
-//        when(balootMock.getCommodityById(commodityId)).thenReturn(commodity);
-//        mockMvc.perform(post("/commodities/" + commodityId + "/rate")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(new ObjectMapper().writeValueAsString(input)))
-//                .andExpect(status().isBadRequest())
-//                .andExpect(content().string(INVALID_RATE_FORMAT));
-//    }
+    @Test
+    @DisplayName("Test rateCommoidty with existed commodityId and null rate return bad request status")
+    public void testRateCommodityWithExistedCommodityIdAndNullRate() throws Exception {
+        String commodityId = "1";
+        Map<String, String> input = new HashMap<>();
+        input.put("rate", null);
+        input.put("username", "username1");
+        Commodity commodity = new Commodity();
+        when(balootMock.getCommodityById(commodityId)).thenReturn(commodity);
+        mockMvc.perform(post("/commodities/" + commodityId + "/rate")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(input)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Cannot parse null string"));
+    }
 
     @Test
     @DisplayName("Test addCommodityComment with existed username return ok status")
@@ -169,6 +170,22 @@ public class CommoditiesControllerTestAPI {
         when(balootMock.generateCommentId()).thenReturn(1);
         when(balootMock.getUserById("username1")).thenThrow(new NotExistentUser());
         Map<String, String> input = Map.of("username", "username1", "comment", "comment2");
+        mockMvc.perform(post("/commodities/" + commodityId + "/comment")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(input)))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("user not found!"));
+    }
+
+    @Test
+    @DisplayName("Test addCommodityComment with null user return not found status")
+    public void testAddCommodityCommentWithNullUser() throws Exception {
+        String commodityId = "1";
+        when(balootMock.generateCommentId()).thenReturn(1);
+        when(balootMock.getUserById(not(eq("username")))).thenThrow(new NotExistentUser());
+        Map<String, String> input = new HashMap<>();
+        input.put("username", null);
+        input.put("comment", "comment2");
         mockMvc.perform(post("/commodities/" + commodityId + "/comment")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(input)))
@@ -229,6 +246,19 @@ public class CommoditiesControllerTestAPI {
                         .content(new ObjectMapper().writeValueAsString(input)))
                 .andExpect(status().isOk())
                 .andExpect(content().json("[{}]"));
+    }
+
+    @Test
+    @DisplayName("Test searchCommodity with searchValue null return bad request status")
+    public void testSearchCommodityWithSearchValueNull() throws Exception {
+        Map<String, String> input = new HashMap<>();
+        input.put("searchOption", "blah");
+        input.put("searchValue", null);
+        mockMvc.perform(post("/commodities/search")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(input)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().json("[]"));
     }
 
     @Test

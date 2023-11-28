@@ -82,6 +82,9 @@ public class CommoditiesController {
         String searchOption = input.get("searchOption");
         String searchValue = input.get("searchValue");
 
+        if (searchValue == null)
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.BAD_REQUEST);
+
         ArrayList<Commodity> commodities = switch (searchOption) {
             case "name" -> baloot.filterCommoditiesByName(searchValue);
             case "category" -> baloot.filterCommoditiesByCategory(searchValue);
