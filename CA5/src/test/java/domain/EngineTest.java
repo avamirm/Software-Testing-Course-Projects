@@ -157,7 +157,31 @@ public class EngineTest {
     }
 
     @Test
-    @DisplayName("Test geetCustomerFraudulentQuantity with order with greater quantity")
+    @DisplayName("Test getQuantityPatternByPrice with multiple orders and equal diff to difference of previous and current quantity")
+    void testGetQuantityPatternByPriceWithDiffEqualToDifferenceOfPreviousAndCurrentQuantity() {
+        int price_ = 20;
+        engine.orderHistory = new ArrayList<>() {{
+            add(new Order() {{
+                id = 1;
+                price = price_;
+                quantity = 1;
+            }});
+            add(new Order() {{
+                id = 2;
+                price = price_;
+                quantity = 3;
+            }});
+
+            add(new Order() {{
+                id = 6;
+                price = price_;
+                quantity = 5;
+            }});
+        }};
+        assertEquals(2, engine.getQuantityPatternByPrice(price_));
+    }
+    @Test
+    @DisplayName("Test getCustomerFraudulentQuantity with order with greater quantity")
     public void testGetCustomerFraudulentQuantityWithOrderWithGreaterQuantity() {
         int quantity1 = 10, quantity2 = 20;
         int customerId = 5;
